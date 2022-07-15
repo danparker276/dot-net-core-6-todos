@@ -1,5 +1,4 @@
-﻿using dp.api.Models;
-using dp.api.Services;
+﻿using dp.api.Services;
 using dp.api.Authorization;
 using dp.business.Enums;
 using dp.business.Helpers;
@@ -17,14 +16,17 @@ namespace dp.api.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private ITodoListService _todoListService;
         private string _dpDbConnectionString;
         private IDaoFactory AdoNetDao => DaoFactories.GetFactory(DataProvider.AdoNet, _dpDbConnectionString);
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ITodoListService tls)
         {
             _userService = userService;
+            _todoListService = tls;
             _dpDbConnectionString = Environment.GetEnvironmentVariable("dpDbConnectionString");
         }
+
         /// <summary>
         /// This main login call to get a token
         /// </summary>
@@ -37,7 +39,7 @@ namespace dp.api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult<AccessToken>> Authenticate([FromBody]TokenRequest userParam)
         {
-            AccessToken user = await _userService.Authenticate(userParam.Email, userParam.Password, (UserType)userParam.UserTypeId);
+            AccessToken user = await _userService.Authenticate(userParam.Email, userParam.Password, (Role)userParam.UserTypeId);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -50,7 +52,7 @@ namespace dp.api.Controllers
         public async Task<IActionResult> GetAll()
         {
             //add skip/take... later on
-            List<User> users = await AdoNetDao.UserDao.GetUserList();
+            List<UserDb> users = await AdoNetDao.UserDao.GetUserList();
             return Ok(users);
         }
 
@@ -88,14 +90,13 @@ namespace dp.api.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             // only admins can access other user records
-            var currentUser = (ClaimedUser)HttpContext.Items["User"];
-            if (id != currentUser.Id && currentUser.Role != Role.Admin)
+            var currentUser = (UserDb)HttpContext.Items["User"];
+            if (id != currentUser.UserId && currentUser.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             var user = await _userService.GetById(id);
             return Ok(user);
         }
-
 
     }
 }

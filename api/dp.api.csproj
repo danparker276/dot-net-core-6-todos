@@ -18,14 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\dataEF\dataEF.csproj" />
     <ProjectReference Include="..\dp.business\dp.business.csproj" />
     <ProjectReference Include="..\dp.data\dp.data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modals\" />
   </ItemGroup>
 
 </Project>

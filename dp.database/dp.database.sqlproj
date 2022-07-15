@@ -46,6 +46,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -64,10 +65,14 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\users.sql" />
-    <Build Include="dbo\Tables\user_api_keys.sql" />
+    <Build Include="dbo\Tables\todo_lists.sql" />
+    <Build Include="dbo\Tables\todo_items.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Post-Deployment\Script.PostDeployment1.sql" />
     <None Include="Scripts\Post-Deployment\UsersDp.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="dp.database.refactorlog" />
   </ItemGroup>
 </Project>

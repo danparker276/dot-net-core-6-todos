@@ -1,7 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using dataEF.Models;
 using dp.api.Authorization;
 using dp.api.Helpers;
 using dp.api.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 
@@ -18,26 +20,31 @@ var builder = WebApplication.CreateBuilder(args);
     //services.AddDbContext<DataContext>();
     services.AddCors();
     services.AddHealthChecks();
+
     services.AddControllers().AddJsonOptions(x =>
     {
         // serialize enums as strings in api responses (e.g. Role)
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
     // configure strongly typed settings object
     services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-    var connectionString = builder.Configuration.GetConnectionString("dpDbConnectionString");
-
+    services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
+    var connectionString = builder.Configuration.GetConnectionString("DpDbConnectionString");
+    services.AddDbContext<todosContext>(options => options.UseSqlServer(connectionString));
     // configure DI for application services
     services.AddScoped<IJwtUtils, JwtUtils>();
-    //services.AddScoped<IUserService, UserService>();
-    services.AddScoped<IUserService>(provider =>
+    services.AddScoped<IUserService, UserService>();
+    /*services.AddScoped<IUserService>(provider =>
     {
         var appSettingsResolved = provider.GetService<IOptions<AppSettings>>();
-        return new UserService(connectionString, appSettingsResolved);
-    });
+        return new UserService(connectionString, appSettingsResolved, jwtUtils);
+    });*/
+    services.AddScoped<ITodoListService, TodoListService>();
 }
 
 var app = builder.Build();

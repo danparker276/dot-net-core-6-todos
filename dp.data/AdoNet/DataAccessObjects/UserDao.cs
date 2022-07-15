@@ -13,7 +13,7 @@ namespace dp.data.AdoNet.DataAccessObjects
         public UserDao(string dpDbConnectionString) : base(dpDbConnectionString)
         {
         }
-        public async Task<User> ValidateUser(string email, string password, UserType userTypeId)
+        public async Task<UserDb> ValidateUser(string email, string password, Role userTypeId)
         {
 
             SqlQuery proc = new SqlQuery(@" 
@@ -31,7 +31,7 @@ namespace dp.data.AdoNet.DataAccessObjects
                     return new UserResponse()
                     {
                         UserId = SqlQueryResultParser.GetValue<Int32>(dataReader, "userId"),
-                        Role = (UserType)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
+                        Role = (Role)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
                         IsActive = SqlQueryResultParser.GetValue<Boolean>(dataReader, "isActive")
 
 
@@ -61,7 +61,7 @@ namespace dp.data.AdoNet.DataAccessObjects
 
         }
 
-        public async Task<User> GetUserInfo(int userId)
+        public async Task<UserDb> GetUserInfo(int userId)
         {
             SqlQuery proc = new SqlQuery(@" 
                 select * from users 
@@ -72,10 +72,10 @@ namespace dp.data.AdoNet.DataAccessObjects
             {
                 while (dataReader.Read())
                 {
-                    return new User()
+                    return new UserDb()
                     {
                         UserId = SqlQueryResultParser.GetValue<Int32>(dataReader, "userId"),
-                        Role = (UserType)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
+                        Role = (Role)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
                         IsActive = SqlQueryResultParser.GetValue<Boolean>(dataReader, "isActive"),
                         Email = SqlQueryResultParser.GetValue<String>(dataReader, "email")
                     };
@@ -91,7 +91,7 @@ namespace dp.data.AdoNet.DataAccessObjects
             proc.AddInputParam("apiKey", SqlDbType.NVarChar, apiKey);
             return await _queryExecutor.ExecuteAsync(proc, sqlReader => GetReturnValue<int?>(sqlReader));
         }
-        public async Task<User> GetUserFromAPIKey(string apiKey)
+        public async Task<UserDb> GetUserFromAPIKey(string apiKey)
         {
 
             SqlQuery proc = new SqlQuery(@" 
@@ -106,13 +106,13 @@ namespace dp.data.AdoNet.DataAccessObjects
 
                 while (dataReader.Read())
                 {
-                    return (new User()
+                    return (new UserDb()
                     {
 
                         UserId = SqlQueryResultParser.GetValue<Int32>(dataReader, "userId"),
                         Email = SqlQueryResultParser.GetValue<String>(dataReader, "email"),
                         IsActive = SqlQueryResultParser.GetValue<Boolean>(dataReader, "IsActive"),
-                        Role = (UserType)SqlQueryResultParser.GetValue<Int32>(dataReader, "UserTypeId")
+                        Role = (Role)SqlQueryResultParser.GetValue<Int32>(dataReader, "UserTypeId")
                     });
                 }
                 return null;
@@ -122,20 +122,20 @@ namespace dp.data.AdoNet.DataAccessObjects
 
 
         }
-        public async Task<List<User>> GetUserList()
+        public async Task<List<UserDb>> GetUserList()
         {
             SqlQuery proc = new SqlQuery(@" 
                 select userId, userTypeId, isActive, email from users;
                 ", 30, System.Data.CommandType.Text);
             return await _queryExecutor.ExecuteAsync(proc, dataReader =>
             {
-                List<User> users = new List<User>();
+                List<UserDb> users = new List<UserDb>();
                 while (dataReader.Read())
                 {
-                    users.Add(new User()
+                    users.Add(new UserDb()
                     {
                         UserId = SqlQueryResultParser.GetValue<Int32>(dataReader, "userId"),
-                        Role = (UserType)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
+                        Role = (Role)SqlQueryResultParser.GetValue<Int32>(dataReader, "userTypeId"),
                         IsActive = SqlQueryResultParser.GetValue<Boolean>(dataReader, "isActive"),
                         Email = SqlQueryResultParser.GetValue<String>(dataReader, "email")
                     });

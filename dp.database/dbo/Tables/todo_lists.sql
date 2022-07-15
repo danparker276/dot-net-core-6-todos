@@ -1,0 +1,7 @@
+﻿CREATE TABLE [dbo].[todo_lists]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Name] NVARCHAR(50) NOT NULL, 
+    [User_id] INT NOT NULL, 
+    [Created] DATETIME NOT NULL DEFAULT GETUTCDATE()
+)
