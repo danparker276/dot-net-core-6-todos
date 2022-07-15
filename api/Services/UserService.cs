@@ -49,8 +49,7 @@ namespace dp.api.Services
 
         public async Task<UserDb> GetById(int id)
         {
-            UserDb test123 = await AdoDao.UserDao.GetUserInfo(id);
-            return test123;
+            return await AdoDao.UserDao.GetUserInfo(id);
         }
     }
 }
